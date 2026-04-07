@@ -17,7 +17,7 @@ import time
 import requests
 
 API_URL = "https://hub.ag3nts.org/verify"
-API_KEY = "8ef4542b-b7a0-4420-9da0-1ee8f8ef4f16"
+API_KEY = os.environ.get("RADIOMONITORING_API_KEY", "8ef4542b-b7a0-4420-9da0-1ee8f8ef4f16")
 TASK = "radiomonitoring"
 
 def post(answer: dict) -> dict:
@@ -39,7 +39,7 @@ def listen():
     return resp
 
 
-def decode_attachment(b64_data: str, meta: str) -> bytes:
+def decode_attachment(b64_data: str) -> bytes:
     return base64.b64decode(b64_data)
 
 
@@ -115,7 +115,7 @@ def collect_intercepts(max_rounds: int = 60) -> list[str]:
             b64 = resp["attachment"]
             filesize = resp.get("filesize", 0)
             print(f"    attachment meta={meta} filesize={filesize}")
-            raw = decode_attachment(b64, meta)
+            raw = decode_attachment(b64)
             extracted = process_attachment(raw, meta)
             print(f"    extracted: {extracted[:120]}")
             fragments.append(extracted)
@@ -177,7 +177,7 @@ Intercepted materials:
 
 
 def transmit_report(city_name: str, city_area: str, warehouses_count: int, phone_number: str):
-    print(f"[*] Transmitting report: city={city_name} area={city_area} warehouses={warehouses_count} phone={phone_number}")
+    print(f"[*] Transmitting final report...")
     resp = post({
         "action": "transmit",
         "cityName": city_name,

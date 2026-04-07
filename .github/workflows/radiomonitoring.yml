@@ -3,6 +3,9 @@ name: Radiomonitoring Task
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   solve:
     runs-on: ubuntu-latest
